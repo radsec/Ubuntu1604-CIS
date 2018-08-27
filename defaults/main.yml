@@ -32,11 +32,11 @@ ubuntu1604cis_use_aide: false
 ubuntu1604cis_set_bootloader_password: false
 ubuntu1604cis_grub_superuser: root
 # Grub Bootloader PBKDF2 Password (use grub-mkpasswd-pbkdf2 to generate): "password"
-ubuntu1604cis_root_password_grub: grub.pbkdf2.sha512.10000.2EDB88EB8D897897A67D45961EFACF9878E3280CC9FCE3BD0035D0F789409BC698831ED38349DF008FC9B1FCF56B26997BB802ED0299B0480744DD45C8658F18.516ABD49F2E70BF3EE21D02B5F6FBFBDC47C056B4CC8FEF2AB83E5F0997C1B00963E11A2B83533D892B3D64FDA2A065AF966D92F029402CB5E3BFD3776FE3D0C
+ubuntu1604cis_root_password_grub: 
 
 # Default root password: password
 ubuntu1604cis_set_root_password: false
-ubuntu1604cis_root_password: $6$22JQUvbd$n9xjZ9mM4todclTzHHUyIlmlxrlXIXFS4H4baITVFqGn.hzo6o.m4lIk.3cPD.ftqkfHctBZzJxR4pSqV8MEL/
+ubuntu1604cis_root_password: 
 # Section 01 Level 5
 # Set this flag to randomize virtual memory region placement.
 ubuntu1604cis_enable_aslr: true
@@ -48,9 +48,8 @@ ubuntu1604cis_use_apparmor: true
 ubuntu1604cis_selinux_apparmor: apparmor
 
 
-# Time Synchronization - chrony OR ntp(d)
+# Time Synchronization - chrony OR ntp
 ubuntu1604cis_time_synchronization: ntp
-#centos7cis_time_Synchronization: ntp
 
 ubuntu1604cis_time_synchronization_servers:
     - 0.pool.ntp.org
@@ -75,8 +74,8 @@ ubuntu1604cis_apt_cache_valid_time: 3600
 
 # Section 02
 # Section 02 Level 2
-# NTPs Include ntp or chrony
-ubuntu1604cis_ntp_package: chrony
+# NTPs Include ntpd or chrony
+ubuntu1604cis_ntp_package: ntpd
 # We focus a server installation, but we may be accept some desktops.
 ubuntu1604cis_remove_xserver: true
 
