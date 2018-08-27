@@ -1,0 +1,79 @@
+---
+## COPYRIGHT NOTICE - LICENSED UNDER GNU GPLV3 ##
+## START COPYRIGHT NOTICE ##
+# Ubuntu 16.04 LTS -CIS Ansible Script - Under Join Copyright
+# Copyright (C) 2018  RADSec
+# Copyright (C) 2018  Glownew Group
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## END COPYRIGHT NOTICE ##
+  - name: restart auditd
+    service:
+      name: auditd
+      state: restarted
+    changed_when: False
+    ignore_errors: True
+
+  - name: restart postfix
+    service:
+      name: postfix
+      state: restarted
+    changed_when: False
+    ignore_errors: True
+
+  - name: restart rsyslog
+    service:
+      name: rsyslog
+      state: restarted
+    changed_when: False
+    ignore_errors: True
+
+  - name: restart ssh
+    service:
+      name: ssh
+      state: restarted
+    changed_when: False
+    ignore_errors: True
+
+  - name: restart syslog-ng
+    service:
+      name: syslog-ng
+      state: restarted
+    changed_when: False
+    ignore_errors: True
+
+  - name: update grub
+    command: update-grub
+    changed_when: False
+    ignore_errors: True
+    when: ubuntu1604cis_set_bootloader_password
+
+  - name: restart iptables
+    shell: iptables-restore < "{{ ubuntu1604cis_iptables_rules_file }}"
+    changed_when: False
+    ignore_errors: True
+
+  - name: restart chrony
+    service:
+      name: chrony 
+      state: restarted
+    changed_when: False
+    ignore_errors: True  
+
+  - name: restart ntp
+    service:
+      name: ntp
+      state: restarted
+    changed_when: False
+    ignore_errors: True

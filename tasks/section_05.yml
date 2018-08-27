@@ -1,0 +1,598 @@
+---
+## COPYRIGHT NOTICE - LICENSED UNDER GNU GPLV3 ##
+## START COPYRIGHT NOTICE ##
+# Ubuntu 16.04 LTS -CIS Ansible Script - Under Join Copyright
+# Copyright (C) 2018  RADSec
+# Copyright (C) 2018  Glownew Group
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## END COPYRIGHT NOTICE ##
+  - name: 5.1.1 Ensure cron daemon is enabled (Scored)
+    service:
+      name: cron
+      state: started
+      enabled: yes
+    tags:
+      - section5
+      - section5.1
+      - section5.1.1
+      - low
+
+  - name: 5.1.2 Ensure permissions on /etc/crontab are configured (Scored)
+    file:
+      path: /etc/crontab
+      owner: root
+      group: root
+      mode: "og-rwx"
+    tags:
+      - section5
+      - section5.1
+      - section5.1.2
+      - low
+
+  - name: 5.1.3 Ensure permissions on /etc/cron.hourly are configured (Scored)
+    file:
+      path: /etc/cron.hourly
+      owner: root
+      group: root
+      mode: "og-rwx"
+      state: directory
+    tags:
+      - section5
+      - section5.1
+      - section5.1.3
+      - low
+
+  - name: 5.1.4 Ensure permissions on /etc/cron.daily are configured (Scored)
+    file:
+      path: /etc/cron.daily
+      owner: root
+      group: root
+      mode: "og-rwx"
+      state: directory
+    tags:
+      - section5
+      - section5.1
+      - section5.1.4
+      - low
+
+  - name: 5.1.5 Ensure permissions on /etc/cron.weekly are configured (Scored)
+    file:
+      path: /etc/cron.weekly
+      owner: root
+      group: root
+      mode: "og-rwx"
+      state: directory
+    tags:
+      - section5
+      - section5.1
+      - section5.1.5
+      - low
+
+  - name: 5.1.6 Ensure permissions on /etc/cron.monthly are configured (Scored)
+    file:
+      path: /etc/cron.monthly
+      owner: root
+      group: root
+      mode: "og-rwx"
+      state: directory
+    tags:
+      - section5
+      - section5.1
+      - section5.1.6
+      - low
+
+  - name: 5.1.7 Ensure permissions on /etc/cron.d are configured (Scored)
+    file:
+      path: /etc/cron.d
+      state: directory
+      owner: root
+      group: root
+      mode: "og-rwx"
+    tags:
+      - section5
+      - section5.1
+      - section5.1.7
+      - low
+
+  - name: 5.1.8 Ensure at/cron is restricted to authorized users (Scored)
+    file:
+      path: "{{ item.name }}"
+      owner: root
+      group: root
+      mode: 0600
+      state: "{{ item.state }}"
+    with_items:
+      - { name: '/etc/cron.deny' , state: 'absent' }
+      - { name: '/etc/at.deny' , state: 'absent' }
+      - { name: '/etc/cron.allow' , state: 'touch' }
+      - { name: '/etc/at.allow' , state: 'touch' }
+    tags:
+      - section5
+      - section5.1
+      - section5.1.8
+      - low
+
+  - name: 5.2.1 Ensure permissions on /etc/ssh/sshd_config are configured (Scored)
+    file:
+      path: /etc/ssh/sshd_config
+      owner: root
+      group: root
+      mode: 0600
+      state: file
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.1
+      - low
+
+  - name: 5.2.2 Ensure SSH Protocol is set to 2 (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^Protocol'
+      line: 'Protocol 2'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.2
+      - low
+
+  - name: 5.2.3 Ensure SSH LogLevel is set to INFO (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^LogLevel'
+      line: 'LogLevel INFO'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.3
+      - low
+
+  - name: 5.2.4 Ensure SSH X11 forwarding is disabled (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^X11Forwarding'
+      line: 'X11Forwarding no'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.4
+      - low
+
+  - name: 5.2.5 Ensure SSH MaxAuthTries is set to 4 or less (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^MaxAuthTries'
+      line: 'MaxAuthTries 4'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.5
+      - low
+
+  - name: 5.2.6 Ensure SSH IgnoreRhosts is enabled (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^IgnoreRhosts'
+      line: 'IgnoreRhosts yes'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.6
+      - low
+
+  - name: 5.2.7 Ensure SSH HostbasedAuthentication is disabled (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^HostbasedAuthentication'
+      line: 'HostbasedAuthentication no'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.7
+      - low
+
+  - name: 5.2.8 Ensure SSH root login is disabled (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^PermitRootLogin'
+      line: 'PermitRootLogin no'
+    notify: restart ssh
+    when: not ubuntu1604cis_permit_root_login
+    tags:
+      - section5
+      - section5.2
+      - section5.2.8
+      - low
+
+  - name: 5.2.9 Ensure SSH PermitEmptyPasswords is disabled (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^PermitEmptyPasswords'
+      line: 'PermitEmptyPasswords no'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.9
+      - low
+
+  - name: 5.2.10 Ensure SSH PermitUserEnvironment is disabled (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^PermitUserEnvironment'
+      line: 'PermitUserEnvironment no'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.10
+      - low
+
+  - name: 5.2.11 Ensure only approved MAC algorithms are used (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      line: 'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.11
+      - low
+
+  - name: 5.2.12 Ensure SSH Idle Timeout Interval is configured (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^{{item.name}}'
+      line: '{{item.name}} {{item.value}}'
+    with_items:
+      - { name: 'ClientAliveInterval' , value: '300' }
+      - { name: 'ClientAliveCountMax' , value: '0' }
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.12
+      - low
+
+  - name: 5.2.13 Ensure SSH LoginGraceTime is set to one minute or less (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^LoginGraceTime'
+      line: 'LoginGraceTime 60'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.13
+      - low
+
+  - name: 5.2.14 Ensure SSH access is limited (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^{{item.name}}'
+      line: '{{item.name}} {{item.value}}'
+    with_items:
+      - { name: 'AllowUsers' , value: '{{ ubuntu1604cis_sshd_allow_users }}' }
+      - { name: 'AllowGroups' , value: '{{ ubuntu1604cis_sshd_allow_groups }}' }
+      - { name: 'DenyUsers' , value: '{{ ubuntu1604cis_sshd_deny_users }}' }
+      - { name: 'DenyGroups' , value: '{{ ubuntu1604cis_sshd_deny_groups }}' }
+    notify: restart ssh
+    when: ubuntu1604cis_ensure_ssh_access_is_limited
+    tags:
+      - section5
+      - section5.2
+      - section5.2.14
+      - medium
+
+  - name: 5.2.15 Ensure SSH warning banner is configured (Scored)
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^Banner'
+      line: 'Banner /etc/issue.net'
+    notify: restart ssh
+    tags:
+      - section5
+      - section5.2
+      - section5.2.15
+      - low
+
+  - name: 5.3.1 Ensure password creation requirements are configured (Scored)
+    apt:
+      name: libpam-pwquality
+      state: present
+    when: ubuntu1604cis_password_complexity
+    tags:
+      - section5
+      - section5.3
+      - section5.3.1
+      - low
+
+  - name: 5.3.1 Ensure password creation requirements are configured (Scored)
+    lineinfile:
+      name: /etc/security/pwquality.conf
+      regexp: '^{{item.name}}'
+      line: '{{item.name}}={{item.value}}'
+    with_items:
+      - { name: 'minlen' , value: '14' }
+      - { name: 'dcredit' , value: '-1' }
+      - { name: 'ucredit' , value: '-1' }
+      - { name: 'ocredit' , value: '-1' }
+      - { name: 'lcredit' , value: '-1' }
+    when: ubuntu1604cis_password_complexity
+    tags:
+      - section5
+      - section5.3
+      - section5.3.1
+      - medium
+
+  - name: 5.3.1 Ensure password creation requirements are configured (Scored)
+    lineinfile:
+      name: /etc/pam.d/common-password
+      regexp: 'pam_pwquality.so'
+      line: 'password        requisite                       pam_pwquality.so try_first_pass retry=3'
+    when: ubuntu1604cis_password_complexity
+    tags:
+      - section5
+      - section5.3
+      - section5.3.1
+      - low
+
+  - name: 5.3.2 Ensure lockout for failed password attempts is configured (Not Scored)
+    lineinfile:
+      name: /etc/pam.d/common-auth
+      regexp: '^(((?!pam_tally2).)*$\nauth\s+\[success\=1\sdefault\=ignore\]\s+pam_unix.so\s)'
+      insertbefore: '^(auth\s+\[success\=1\sdefault\=ignore\]\s+pam_unix.so\s.*)'
+      line: 'auth    required      pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900'
+      state: present
+    when: ubuntu1604cis_lockout_for_failed_password_attempts_pam_tally2
+    tags:
+      - section5
+      - section5.3
+      - section5.3.2
+      - high
+
+  - name: 5.3.3 Ensure password reuse is limited (Scored)
+    lineinfile:
+      name: /etc/pam.d/common-password
+      regexp: '^(password\s+\[success\=1\sdefault\=ignore\]\s+pam_unix.so\s((?!remember\=5).)*$)'
+      backrefs: yes
+      line: '\1 remember=5'
+      state: present
+    tags:
+      - section5
+      - section5.3
+      - section5.3.3
+      - low
+
+  - name: 5.3.4 Ensure password hashing algorithm is SHA-512 (Scored)
+    lineinfile:
+      name: /etc/pam.d/common-password
+      regexp: '^(password\s+\[success\=1\sdefault\=ignore\]\s+pam_unix.so\s((?!sha512).)*$)'
+      backrefs: yes
+      line: '\1 sha512'
+    tags:
+      - section5
+      - section5.3
+      - section5.3.4
+      - low
+
+  - command: grep -oP '(?<=^PASS_MAX_DAYS\s)[0-9]+' /etc/login.defs
+    register: pass_max_days
+    changed_when: False
+    check_mode: no
+    ignore_errors: true
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.1
+      - low
+
+  - name: 5.4.1.1 Ensure password expiration is 365 days or less (Scored)
+    lineinfile:
+      dest: /etc/login.defs
+      line: 'PASS_MAX_DAYS 90'
+      regexp: '^PASS_MAX_DAYS'
+    ignore_errors: true
+    when:
+      - pass_max_days.stdout|int > 90
+      - ubuntu1604cis_password_expiration_ninty_days
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.1
+      - low
+
+  - command: grep -oP '(?<=^PASS_MIN_DAYS\s)[0-9]+' /etc/login.defs
+    register: pass_min_days
+    changed_when: False
+    check_mode: no
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.2
+      - low
+
+  - name: 5.4.1.2 Ensure minimum days between password changes is 7 or more (Scored)
+    lineinfile:
+      dest: /etc/login.defs
+      line: 'PASS_MIN_DAYS 7'
+      regexp: '^PASS_MIN_DAYS'
+    when:
+      - pass_min_days.stdout|int < 7
+      - ubuntu1604cis_password_change_seven_day_delay
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.2
+      - low
+
+  - command: grep -oP '(?<=^PASS_WARN_AGE\s)[0-9]+' /etc/login.defs
+    register: pass_warn_age
+    changed_when: False
+    check_mode: no
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.3
+      - low
+
+  - name: 5.4.1.3 Ensure password expiration warning days is 7 or more (Scored)
+    lineinfile:
+      dest: /etc/login.defs
+      line: 'PASS_WARN_AGE 7'
+      regexp: '^PASS_WARN_AGE'
+    when: pass_warn_age.stdout|int < 7
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.3
+      - low
+
+  - command: grep INACTIVE /etc/login.defs
+    changed_when: False
+    failed_when: False
+    check_mode: no
+    register: lock_inactive_rc
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.4
+      - low
+
+  - name: 5.4.1.4 Ensure inactive password lock is 30 days or less (Scored)
+    lineinfile:
+      dest: /etc/login.defs
+      line: 'INACTIVE=35'
+      state: present
+    when: lock_inactive_rc.rc == 1
+    tags:
+      - section5
+      - section5.4
+      - section5.4.1.4
+      - low
+
+  - shell: egrep -v "^\+" /etc/passwd | awk -F':' '($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print}'
+    register: system_acounts
+    changed_when: False
+    tags:
+      - section5
+      - section5.4
+      - section5.4.2
+      - low
+
+  - copy:
+      src: scripts/5.4.2.sh
+      dest: /opt/5.4.2.sh
+      owner: root
+      group: root
+      mode: 0700
+    tags:
+      - section5
+      - section5.4
+      - section5.4.2
+      - low
+
+  - name: 5.4.2 Ensure system accounts are non-login (Scored)
+    shell: /opt/5.4.2.sh
+    check_mode: no
+    ignore_errors: true
+    when:
+      - system_acounts.stdout != ""
+      - ubuntu1604cis_ensure_system_accounts_non_login
+    tags:
+      - section5
+      - section5.4
+      - section5.4.2
+      - low
+
+  - name: Remove 5.4.2 script
+    file:
+      path: /opt/5.4.2.sh
+      owner: root
+      group: root
+      mode: 0700
+      state: absent
+    tags:
+      - section5
+      - section5.4
+      - section5.4.2
+      - low
+
+  - name: 5.4.3 Ensure default group for the root account is GID 0 (Scored)
+    command: grep "^root:" /etc/passwd | cut -f4 -d':'
+    register: root_gid
+    failed_when: False 
+    tags:
+      - section5
+      - section5.4
+      - section5.4.3
+      - low
+
+  - name: 5.4.3 Ensure default group for the root account is GID 0 (Scored)
+    command: usermod -g 0 root
+    when: root_gid !=0
+    tags:
+      - section5
+      - section5.4
+      - section5.4.3
+      - low
+
+  - name: 5.4.4 Ensure default user umask is 027 or more restrictive (Scored)
+    lineinfile:
+      dest: "{{ item }}"
+      line: 'umask 027'
+      regexp: '^umask'
+      state: present
+    with_items:
+      - '/etc/bash.bashrc'
+      - '/etc/profile'
+    tags:
+      - section5
+      - section5.4
+      - section5.4.4
+      - low
+
+  - stat:
+      path: /etc/securetty
+    register: securetty_file
+    tags:
+      - section5
+      - section5.5
+      - low
+
+  - name: 5.5 Ensure root login is restricted to system console (Not Scored)
+    debug: msg='*** Check /etc/securetty for console allowed for root access ***'
+    when: securetty_file.stat.exists == true
+    tags:
+      - section5
+      - section5.5
+      - low
+
+  - name: 5.6 Ensure access to the su command is restricted (Scored)
+    lineinfile:
+      dest: /etc/pam.d/su
+      line: 'auth            required        pam_wheel.so use_uid'
+      state: present
+    tags:
+      - section5
+      - section5.6
+      - low

@@ -1,0 +1,1305 @@
+---
+## COPYRIGHT NOTICE - LICENSED UNDER GNU GPLV3 ##
+## START COPYRIGHT NOTICE ##
+# Ubuntu 16.04 LTS -CIS Ansible Script - Under Join Copyright
+# Copyright (C) 2018  RADSec
+# Copyright (C) 2018  Glownew Group
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## END COPYRIGHT NOTICE ##
+  - name: 1.1.1.1 Ensure mounting of cramfs filesystems is disabled (Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install cramfs /bin/true'
+      state: present
+      create: yes
+      register: modprobed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.1
+
+  - name: 1.1.1.1 Ensure mounting of cramfs filesystems is disabled (Scored)
+    shell: rmmod cramfs
+      executable: /bin/bash
+    when: modprobed.changed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.1
+
+  - name: 1.1.1.2 Ensure mounting of freevxfs filesystems is disabled (Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install freevxfs /bin/true'
+      state: present
+      create: yes
+      register: modprobed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.2
+
+  - name: 1.1.1.2 Ensure mounting of freevxfs filesystems is disabled (Scored)
+    shell: rmmod freevxfs
+      executable: /bin/bash
+    when: modprobed.changed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.2
+
+  - name: 1.1.1.3 Ensure mounting of jffs2 filesystems is disabled (Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install jffs2 /bin/true'
+      state: present
+      create: yes
+      register: modprobed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.3
+
+  - name: 1.1.1.3 Ensure mounting of jffs2 filesystems is disabled (Scored)
+    shell: rmmod jffs2
+      executable: /bin/bash
+    when: modprobed.changed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.3
+
+  - name: 1.1.1.4 Ensure mounting of hfs filesystems is disabled (Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install hfs /bin/true'
+      state: present
+      create: yes
+      register: modprobed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.4
+
+  - name: 1.1.1.4 Ensure mounting of hfs filesystems is disabled (Scored)
+    shell: rmmod hfs
+      executable: /bin/bash
+    when: modprobed.changed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.4
+
+  - name: 1.1.1.5 Ensure mounting of hfsplus filesystems is disabled (Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install hfsplus /bin/true'
+      state: present
+      create: yes
+      register: modprobed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.5
+
+  - name: 1.1.1.5 Ensure mounting of hfsplus filesystems is disabled (Scored)
+    shell: rmmod hfsplus
+      executable: /bin/bash
+    when: modprobed.changed
+    tags:
+      - section1
+      - low
+      - section1.1
+      - section1.1.1.5
+
+  - name: 1.1.1.6 Ensure mounting of udf filesystems is disabled (Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install udf /bin/true'
+      state: present
+      create: yes
+      register: modprobed
+    tags:
+      - section1
+      - section1.1
+      - section1.1.1.6
+      - low
+
+  - name: 1.1.1.6 Ensure mounting of udf filesystems is disabled (Scored)
+    shell: rmmod udf
+      executable: /bin/bash
+    when: modprobed.changed
+    tags:
+      - section1
+      - section1.1
+      - section1.1.1.6
+      - low
+
+  - name: 1.1.2 Ensure separate partition exists for /tmp (Scored)
+    command: grep '\s/tmp\s' /etc/fstab
+    register: tmp_partition
+    failed_when: tmp_partition.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.2
+      - low
+
+  - name: PRE 1.1.3 Install dependencies for mountopts-module | PART ONE
+    apt:
+      name: python-pip
+      state: present
+    when: tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.3
+      - low
+
+  - name: PRE 1.1.3 Install dependencies for mountopts-module | PART TWO
+    pip:
+      name: fstab
+    when: tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.3
+      - low
+
+  - name: PRE 1.1.3 Install dependencies for mountopts-module | PART THREE
+    mountopts:
+      name: /tmp
+      option: nodev
+      state: present
+    when: tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.3
+      - low
+
+  - shell: mount | grep /tmp|grep nodev
+    register: mount_tmp_output
+    failed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.3
+      - low
+
+  - name: 1.1.3 Ensure nodev option set on /tmp partition (Scored)
+    command: mount -o remount,nodev /tmp
+    ignore_errors: true
+    when: tmp_partition.rc == 0 and mount_tmp_output.rc != 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.3
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.4
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.4
+      - low
+
+  - mountopts:
+      name: /tmp
+      option: nosuid
+      state: present
+    when: tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.4
+      - low
+
+  - shell: mount | grep /tmp|grep nosuid
+    register: mount_tmp_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.4
+      - low
+
+  - name: 1.1.4 Ensure nosuid option set on /tmp partition (Scored)
+    command: mount -o remount,nosuid /tmp
+    ignore_errors: true
+    when: tmp_partition.rc == 0 and mount_tmp_output.rc != 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.4
+      - low
+
+  - name: 1.1.5 Ensure separate partition exists for /var (Scored)
+    command: grep '\s/var\s' /etc/fstab
+    register: var_partition
+    failed_when: var_partition.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.5
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: var_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.5
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: var_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.5
+      - low
+
+  - mountopts:
+      name: /var
+      option: nosuid
+      state: present
+    when: var_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.5
+      - low
+
+  - mountopts:
+      name: /var
+      option: noexec
+      state: present
+    when: var_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.5
+      - low
+
+  - mountopts:
+      name: /var
+      option: nodev
+      state: present
+    when: var_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.5
+      - low
+
+  - name: 1.1.6 Ensure separate partition exists for /var/tmp (Scored)
+    command: grep '\s/var/tmp\s' /etc/fstab
+    register: var_tmp_partition
+    failed_when: var_tmp_partition.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.6
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.7
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.7
+      - low
+
+  - mountopts:
+      name: /var/tmp
+      option: nodev
+      state: present
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.7
+      - low
+
+  - shell: mount | grep /var/tmp|grep nodev
+    register: mount_var_tmp_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.7
+      - low
+
+  - name: 1.1.7 Ensure nodev option set on /var/tmp partition (Scored)
+    command: mount -o remount,nodev /var/tmp
+    ignore_errors: true
+    when: var_tmp_partition.rc == 0 and mount_var_tmp_output.rc != 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.7
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.8
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.8
+      - low
+
+  - mountopts:
+      name: /var/tmp
+      option: nosuid
+      state: present
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.8
+      - low
+
+  - shell: mount | grep /var/tmp|grep nosuid
+    register: mount_var_tmp_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.8
+      - low
+
+  - name: 1.1.8 Ensure nosuid option set on /var/tmp partition (Scored)
+    command: mount -o remount,nosuid /var/tmp
+    ignore_errors: true
+    when: var_tmp_partition.rc == 0 and mount_var_tmp_output.rc != 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.8
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.9
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.9
+      - low
+
+  - mountopts:
+      name: /var/tmp
+      option: noexec
+      state: present
+    when: var_tmp_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.9
+      - low
+
+  - shell: mount | grep /var/tmp|grep noexec
+    register: mount_var_tmp_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.9
+      - low
+
+  - name: 1.1.9 Ensure noexec option set on /var/tmp partition (Scored)
+    command: mount -o remount,noexec /var/tmp
+    ignore_errors: true
+    when: var_tmp_partition.rc == 0 and mount_var_tmp_output.rc != 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.9
+      - low
+
+  - name: 1.1.10 Ensure separate partition exists for /var/log (Scored)
+    command: grep '\s/var/log\s' /etc/fstab
+    register: var_log_partition
+    failed_when: var_log_partition.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.10
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: var_log_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.10
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: var_log_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.10
+      - low
+
+  - mountopts:
+      name: /var/log
+      option: noexec
+      state: present
+    when: var_log_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.10
+      - low
+
+  - mountopts:
+      name: /var/log
+      option: nodev
+      state: present
+    when: var_log_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.
+      - low
+
+  - mountopts:
+      name: /var/log
+      option: nosuid
+      state: present
+    when: var_log_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.10
+      - low
+
+  - name: 1.1.11 Ensure separate partition exists for /var/log/audit (Scored)
+    command: grep '\s/var/log/audit\s' /etc/fstab
+    register: var_log_audit_partition
+    failed_when: var_log_audit_partition.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.11
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: var_log_audit_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.11
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: var_log_audit_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.11
+      - low
+
+  - mountopts:
+      name: /var/log/audit
+      option: noexec
+      state: present
+    when: var_log_audit_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.11
+      - low
+
+  - mountopts:
+      name: /var/log/audit
+      option: nodev
+      state: present
+    when: var_log_audit_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.11
+      - low
+
+  - mountopts:
+      name: /var/log/audit
+      option: nosuid
+      state: present
+    when: var_log_audit_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.11
+      - low
+
+  - name: 1.1.12 Ensure separate partition exists for /home (Scored)
+    command: grep '\s/home\s' /etc/fstab
+    register: home_partition
+    failed_when: home_partition.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.1
+      - section1.1.12
+      - low
+
+  - apt:
+      name: python-pip
+      state: present
+    when: home_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.
+      - low
+
+  - name: install dependencies for mountopts-module
+    pip:
+      name: fstab
+    when: home_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.13
+      - low
+
+  - mountopts:
+      name: /home
+      option: nodev
+      state: present
+    when: home_partition.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.13
+      - low
+
+  - shell: mount | grep /home|grep nodev
+    register: mount_home_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.13
+      - low
+
+  - name: 1.1.13 Ensure nodev option set on /home partition (Scored)
+    command: mount -o remount,nodev /home
+    ignore_errors: true
+    when: home_partition.rc == 0 and mount_home_output.rc == 1
+    tags:
+      - section1
+      - section1.1
+      - section1.1.13
+      - low
+
+  - shell: mount | grep /dev/shm|grep nodev
+    register: mount_dev_shm_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.14
+      - low
+
+  - name: 1.1.14 Ensure nodev option set on /dev/shm partition (Scored)
+    command: mount -o remount,nodev /home
+    ignore_errors: true
+    when: mount_dev_shm_output.rc == 1
+    tags:
+      - section1
+      - section1.1
+      - section1.1.14
+      - low
+
+  - shell: mount | grep /dev/shm|grep nosuid
+    register: mount_dev_shm_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.15
+      - low
+
+  - name: 1.1.15 Ensure nosuid option set on /dev/shm partition (Scored)
+    command: mount -o remount,nosuid /dev/shm
+    ignore_errors: true
+    when: mount_dev_shm_output.rc == 1
+    tags:
+      - section1
+      - section1.1
+      - section1.1.15
+      - low
+
+  - shell: mount | grep /dev/shm|grep noexec
+    register: mount_dev_shm_output
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.16
+      - low
+
+  - name: 1.1.16 Ensure noexec option set on /dev/shm partition (Scored)
+    command: mount -o remount,noexec /dev/shm
+    ignore_errors: true
+    when: mount_dev_shm_output.rc == 1
+    tags:
+      - section1
+      - section1.1
+      - section1.1.16
+      - low
+
+  - name: 1.1.17 Ensure nodev option set on removable media partitions (Not Scored)
+    debug:
+      msg: "/!\ Ensure removable partitions have nodev option"
+    tags:
+      - section1
+      - section1.1
+      - section1.1.17
+      - low
+
+  - name: 1.1.18 Ensure nosuid option set on removable media partitions (Not Scored)
+    debug:
+      msg: "/!\ Ensure removable partitions have nosuid option"
+    tags:
+      - section1
+      - section1.1
+      - section1.1.18
+      - low
+
+  - name: 1.1.19 Ensure noexec option set on removable media partitions (Not Scored)
+    debug:
+      msg: "/!\ Ensure removable partitions have noexec option"
+    tags:
+      - section1
+      - section1.1
+      - section1.1.19
+      - low
+
+  - shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -print 2>/dev/null
+    failed_when: false
+    changed_when: false
+    check_mode: no
+    register: sticky_bit_dirs
+    tags:
+      - section1
+      - section1.1
+      - section1.1.20
+      - low
+
+  - name: 1.1.20 Ensure sticky bit is set on all world-writable directories (Scored)
+    file:
+        path: "{{ item }}"
+        mode: "a+t"
+    with_items: "{{sticky_bit_dirs.stdout_lines}}"
+    tags:
+      - section1
+      - section1.1
+      - section1.1.20
+      - low
+
+  - shell: dpkg -l|grep autofs
+    register: dpkg_autofs
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.1
+      - section1.1.21
+      - low
+
+  - name: 1.1.21 Disable Automounting (Scored)
+    systemd:
+      name: autofs
+      enabled: no
+    when: dpkg_autofs.rc == 0
+    tags:
+      - section1
+      - section1.1
+      - section1.1.21
+      - low
+
+  - name: 1.2.1 Ensure package manager repositories are configured (Not Scored)
+    lineinfile:
+      dest: /etc/apt/sources.list
+      line: '{{item}}'
+      state: present
+      create: yes
+    with_items:
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial main restricted'
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial-updates main restricted'
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial universe'
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial-updates universe'
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial multiverse'
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial-updates multiverse'
+      - 'deb http://archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse'
+      - 'deb http://security.ubuntu.com/ubuntu xenial-security main restricted'
+      - 'deb http://security.ubuntu.com/ubuntu xenial-security universe'
+      - 'deb http://security.ubuntu.com/ubuntu xenial-security multiverse'
+    when: ubuntu1604cis_configure_apt_sources_list
+    tags:
+      - section1
+      - section1.2
+      - section1.2.1
+      - low
+
+  - name: 1.2.2 Ensure GPG keys are configured (Not Scored)
+    lineinfile:
+      dest: /etc/apt/apt.conf.d/99GPG-apt
+      line: 'APT::Get::AllowUnauthenticated "false";'
+      state: present
+      create: yes
+    tags:
+      - section1
+      - section1.2
+      - section1.2.2
+      - low
+
+  - name: 1.3.1 Ensure AIDE is installed (Scored)
+    apt:
+      name: aide
+      state: present
+    register: aide_installed
+    when: ubuntu1604cis_use_aide == true
+    tags:
+      - section1
+      - section1.3
+      - section1.3.1
+      - medium
+
+  - name: 1.3.1 Ensure AIDE is installed (Scored)
+    apt:
+      name: aide-common
+      state: present
+    when: ubuntu1604cis_use_aide == true
+    tags:
+      - section1
+      - section1.3
+      - section1.3.1
+      - medium
+
+  - name: 1.3.2 Ensure filesystem integrity is regularly checked (Scored)
+    cron:
+      name: "Check files integrity"
+      minute: 0
+      hour: 5
+      job: "/usr/sbin/aide --check"
+    when: ubuntu1604cis_use_aide == true
+    tags:
+      - section1
+      - section1.3
+      - section1.3.2
+      - medium
+
+  - name: 1.4.1 Ensure permissions on bootloader config are configured (Scored)
+    file:
+      dest: /boot/grub/grub.cfg
+      owner: root
+      group: root
+      mode: 0600
+    tags:
+      - section1
+      - section1.4
+      - section1.4.1
+      - low
+
+  - command: grep "^password" /boot/grub/grub.cfg
+    register: boot_password
+    failed_when: false
+    ignore_errors: yes
+    changed_when: false
+    tags:
+      - section1
+      - section1.4
+      - section1.4.2
+      - medium
+
+  - name: 1.4.2 Ensure bootloader password is set (Scored)
+    lineinfile:
+        dest: /etc/grub.d/40_custom
+        regexp: '^{{item.name}}'
+        line: '{{item.name}}{{item.value}} {{item.value2}}'
+        state: present
+    with_items:
+      - { name: 'set superusers=' , value: '"{{ubuntu1604cis_grub_superuser}}"' , value2: '' }
+      - { name: 'password_pbkdf2 ' , value: '{{ubuntu1604cis_grub_superuser}}' , value2: '{{ubuntu1604cis_root_password_grub}}' }
+    when:
+      - boot_password.rc == 1
+      - ubuntu1604cis_set_bootloader_password
+    notify: update grub
+    ignore_errors: yes
+    tags:
+      - section1
+      - section1.4
+      - section1.4.2
+      - medium
+
+  - command: grep "^root:[*\!]:" /etc/shadow
+    register: ubuntu1604cis_root_password_set
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.4
+      - section1.4.3
+      - medium
+
+  - name: 1.4.3 Ensure authentication required for single user mode (Scored)
+    user:
+      name: root
+      state: present
+      password: "{{ ubuntu1604cis_root_password }}"
+    when:
+      - ubuntu1604cis_root_password_set.rc == 0
+      - ubuntu1604cis_set_root_password
+    tags:
+      - section1
+      - section1.4
+      - section1.4.3
+      - medium
+
+  - command: grep "hard core" /etc/security/limits.conf
+    register: hard_core
+    failed_when: false
+    changed_when: false
+    tags:
+      - section1
+      - section1.5
+      - section1.5.1
+      - low
+
+  - name: 1.5.1 Ensure core dumps are restricted (Scored)
+    lineinfile:
+      dest: '/etc/security/limits.conf'
+      line: '* hard core 0'
+      state: present
+      insertbefore: '^# End of file'
+    when: hard_core.rc != 0
+    tags:
+      - section1
+      - section1.5
+      - section1.5.1
+      - low
+
+  - name: 1.5.1 Ensure core dumps are restricted (Scored)
+    sysctl:
+      name: fs.suid_dumpable
+      value: 0
+      state: present
+    when: ubuntu1604cis_restrict_core_dumps
+    tags:
+      - section1
+      - section1.5
+      - section1.5.1
+      - low
+
+  - name: 1.5.2 Ensure XD/NX support is enabled (Not Scored)
+    shell: 'dmesg | grep NX'
+    register: nx_result
+    failed_when: nx_result.rc == 1
+    changed_when: false
+    ignore_errors: true
+    tags:
+      - section1
+      - section1.5
+      - section1.5.2
+      - low
+
+  - name: 1.5.3 Ensure address space layout randomization (ASLR) is enabled (Scored)
+    sysctl:
+      name: kernel.randomize_va_space
+      value: 2
+      state: present
+    when: ubuntu1604cis_enable_aslr
+    tags:
+      - section1
+      - section1.5
+      - section1.5.3
+      - low
+
+  - name: 1.5.4 Ensure prelink is disabled (Scored)
+    apt:
+      name: prelink
+      state: absent
+    tags:
+      - section1
+      - section1.5
+      - section1.5.4
+      - low
+
+  - name: 1.6.1.1 Ensure SELinux is not disabled in bootloader configuration (Scored)
+    lineinfile:
+      dest: /etc/default/grub
+      line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet"'
+      state: present
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.1
+      - high
+
+  - name: 1.6.1.1 Ensure SELinux is not disabled in bootloader configuration (Scored)
+    lineinfile:
+      dest: /etc/default/grub
+      line: 'GRUB_CMDLINE_LINUX=""'
+      state: present
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.1
+      - high
+
+  - command: dpkg -l selinux
+    register: selinux_installed
+    failed_when: false
+    ignore_errors: true
+    changed_when: false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.2
+      - high
+
+  - apt:
+      name: selinux
+      state: present
+    when:
+      - selinux_installed.rc == 1
+      - ubuntu1604cis_enable_selinux
+      - ubuntu1604cis_use_apparmor == false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.2
+      - high
+
+  - name: 1.6.1.2 Ensure the SELinux state is enforcing (Scored)
+    lineinfile:
+      dest: /etc/selinux/config
+      line: 'SELINUX=enforcing'
+      state: present
+    when:
+      - selinux_installed.rc == 0
+      - ubuntu1604cis_enable_selinux
+      - ubuntu1604cis_use_apparmor == false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.2
+      - high
+
+  - name: 1.6.1.3 Ensure SELinux policy is configured (Scored)
+    lineinfile:
+      dest: /etc/selinux/config
+      line: 'SELINUXTYPE=ubuntu'
+      state: present
+    when:
+      - selinux_installed.rc == 0
+      - ubuntu1604cis_enable_selinux
+      - ubuntu1604cis_use_apparmor == false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.3
+      - high
+
+  - name: 1.6.1.4 Ensure no unconfined daemons exist (Scored)
+    shell: ps -eZ | egrep "initrc" | egrep -vw "tr|ps|egrep|bash|awk" | tr ':' ' ' | awk '{print $NF }'
+    when:
+      - selinux_installed.rc == 0
+      - ubuntu1604cis_enable_selinux == true
+      - ubuntu1604cis_use_apparmor == false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.1.4
+      - high
+
+  - name: 1.6.2.1 Ensure AppArmor is not disabled in bootloader configuration (Scored)
+    command: sed -i -r 's/apparmor=0//g' /boot/grub/grub.cfg
+    when: ubuntu1604cis_use_apparmor
+    notify: update grub
+    tags:
+      - section1
+      - section1.6
+      - section1.6.2.1
+      - high
+
+  - shell : apparmor_status|grep "0 processes are in complain mode"
+    register: apparmor_status_complain_output
+    failed_when: false
+    changed_when: false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.2.2
+      - high
+
+  - shell : apparmor_status|grep "0 processes are unconfined"
+    register: apparmor_status_unconfined_output
+    failed_when: false
+    changed_when: false
+    tags:
+      - section1
+      - section1.6
+      - section1.6.2.2
+      - high
+
+  - name: 1.6.2.2 Ensure all AppArmor Profiles are enforcing (Scored)
+    shell: aa-enforce /etc/apparmor.d/*
+    when:
+      - ubuntu1604cis_use_apparmor
+      - apparmor_status_complain_output.rc == 1
+      - apparmor_status_unconfined_output == 1
+    tags:
+      - section1
+      - section1.6
+      - section1.6.2.2
+      - high
+
+  - name: 1.6.3 Ensure SELinux or AppArmor are installed (Scored)
+    apt:
+      name: "{{ ubuntu1604cis_selinux_apparmor }}"
+      state: present
+    tags:
+      - section1
+      - section1.6
+      - section1.6.3
+      - high
+
+  - name: 1.7.1.1 Ensure message of the day is configured properly (Scored)
+    template:
+      src: etc/motd.j2
+      dest: /etc/motd
+    tags:
+      - section1
+      - section1.7
+      - section1.7.1.1
+      - low
+
+  - name: 1.7.1.2 Ensure local login warning banner is configured properly (Not Scored)
+    shell: egrep '(\\v|\\r|\\m|\\s)' /etc/issue
+    register: egrep_os_infos
+    failed_when: egrep_os_infos.rc == 0
+    changed_when: false
+    tags:
+      - section1
+      - section1.7
+      - section1.7.1.2
+      - low
+
+  - name: 1.7.1.3 Ensure remote login warning banner is configured properly (Not Scored)
+    shell: egrep '(\\v|\\r|\\m|\\s)' /etc/issue.net
+    register: egrep_os_infos
+    failed_when: egrep_os_infos.rc == 0
+    changed_when: false
+    tags:
+      - section1
+      - section1.7
+      - section1.7.1.3
+      - low
+
+  - name: 1.7.1.4 Ensure permissions on /etc/motd are configured (Not Scored)
+    file:
+      path: /etc/motd
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - section1
+      - section1.7
+      - section1.7.1.4
+      - low
+
+  - name: 1.7.1.5 Ensure permissions on /etc/issue are configured (Scored)
+    file:
+      path: /etc/issue
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - section1
+      - section1.7
+      - section1.7.1.5
+      - low
+
+  - name: 1.7.1.6 Ensure permissions on /etc/issue.net are configured (Not Scored)
+    file:
+      path: /etc/issue.net
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - section1
+      - section1.7
+      - section1.7.1.7
+      - low
+
+  - name: 1.7.2 Ensure GDM login banner is configured (Scored)
+    stat:
+      path: /etc/dconf/profile/gdm
+    register: gdm_rule
+    tags:
+      - section1
+      - section1.7
+      - section1.7.2
+      - low
+
+  - name: 1.7.2 Ensure GDM login banner is configured (Scored)
+    lineinfile:
+      dest: /etc/dconf/profile/gdm
+      regexp: '{{item.regexp}}'
+    with_items:
+      - { regexp: '^user-db:user' }
+      - { regexp: '^system-db:gdm' }
+      - { regexp: '^file-db:/usr/share/gdm/greeter-dconf-defaults' }
+    when: gdm_rule.stat.exists == true
+    tags:
+      - section1
+      - section1.7
+      - section1.7.2
+      - low
+
+  - name: 1.7.2 Ensure GDM login banner is configured (Scored)
+    lineinfile:
+      dest: /etc/dconf/db/gdm.d/01-banner-message
+      create: yes
+      regexp: "{{ item.regexp }}"
+    with_items:
+      - { regexp: '^[org/gnome/login-screen]' }
+      - { regexp: '^banner-message-enable=true' }
+      - { regexp: '^banner-message-text="{{ ubuntu1604cis_warning_banner }}"^\' }
+      # - { regexp: '^banner-message-text="Authorized uses only. All activity may be monitored and reported"^\' }
+    when: gdm_rule.stat.exists == true
+    tags:
+      - section1
+      - section1.7
+      - section1.7.2
+      - low
+
+  - name: 1.8 Ensure updates, patches, and additional security software are installed (Not Scored)
+    apt:
+      update_cache: yes
+      cache_valid_time: "{{ubuntu1604cis_apt_cache_valid_time}}"
+      upgrade: yes
+    when: ubuntu1604cis_apt_upgrade
+    tags:
+      - section1
+      - section1.8
+      - low

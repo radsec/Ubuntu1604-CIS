@@ -1,0 +1,184 @@
+## COPYRIGHT NOTICE - LICENSED UNDER GNU GPLV3 ##
+## START COPYRIGHT NOTICE ##
+# Ubuntu 16.04 LTS -CIS Ansible Script - Under Join Copyright
+# Copyright (C) 2018  RADSec
+# Copyright (C) 2018  Glownew Group
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## END COPYRIGHT NOTICE ##
+
+# Please enter following parameters before system hardening
+# Section 01
+# Section 01 Level 1
+ubuntu1604cis_partitioning: false
+
+ubuntu1604cis_configure_apt_sources_list: false
+
+# Section 01 Level 3
+ubuntu1604cis_use_aide: false
+
+# Section 01 Level 4
+ubuntu1604cis_set_bootloader_password: false
+ubuntu1604cis_grub_superuser: root
+# Grub Bootloader PBKDF2 Password (use grub-mkpasswd-pbkdf2 to generate): "password"
+ubuntu1604cis_root_password_grub: grub.pbkdf2.sha512.10000.2EDB88EB8D897897A67D45961EFACF9878E3280CC9FCE3BD0035D0F789409BC698831ED38349DF008FC9B1FCF56B26997BB802ED0299B0480744DD45C8658F18.516ABD49F2E70BF3EE21D02B5F6FBFBDC47C056B4CC8FEF2AB83E5F0997C1B00963E11A2B83533D892B3D64FDA2A065AF966D92F029402CB5E3BFD3776FE3D0C
+
+# Default root password: password
+ubuntu1604cis_set_root_password: false
+ubuntu1604cis_root_password: $6$22JQUvbd$n9xjZ9mM4todclTzHHUyIlmlxrlXIXFS4H4baITVFqGn.hzo6o.m4lIk.3cPD.ftqkfHctBZzJxR4pSqV8MEL/
+# Section 01 Level 5
+# Set this flag to randomize virtual memory region placement.
+ubuntu1604cis_enable_aslr: true
+
+# Section 01 Level 6
+ubuntu1604cis_enable_selinux: true
+# Set this flag to use AppArmor. It is useful to disable it when the system does not support the kernel module.
+ubuntu1604cis_use_apparmor: true
+ubuntu1604cis_selinux_apparmor: apparmor
+
+
+# Time Synchronization - chrony OR ntp(d)
+ubuntu1604cis_time_synchronization: ntp
+#centos7cis_time_Synchronization: ntp
+
+ubuntu1604cis_time_synchronization_servers:
+    - 0.pool.ntp.org
+    - 1.pool.ntp.org
+    - 2.pool.ntp.org
+    - 3.pool.ntp.org
+
+# 3.4.2 | PATCH | Ensure /etc/hosts.allow is configured
+ubuntu1604cis_host_allow:
+    - "10.0.0.0/255.0.0.0"
+    - "172.16.0.0/255.240.0.0"
+    - "192.168.0.0/255.255.0.0"
+
+ubuntu1604cis_warning_banner: |
+    Authorized uses only. All activity may be monitored and reported.
+# Section 01 Level 8
+# The execution is faster without packages upgrade.
+ubuntu1604cis_apt_upgrade: false
+# Only update apt cache if older than this value (in seconds)
+ubuntu1604cis_apt_cache_valid_time: 3600
+
+
+# Section 02
+# Section 02 Level 2
+# NTPs Include ntp or chrony
+ubuntu1604cis_ntp_package: chrony
+# We focus a server installation, but we may be accept some desktops.
+ubuntu1604cis_remove_xserver: true
+
+ubuntu1604cis_avahi_server: false
+ubuntu1604cis_cups_server: false
+ubuntu1604cis_dhcp_server: false
+ubuntu1604cis_ldap_sserver: false
+ubuntu1604cis_nfs_rpc_server: false
+ubuntu1604cis_dns_server: false
+ubuntu1604cis_ftp_server: false
+ubuntu1604cis_http_server: false
+ubuntu1604cis_mail_server: false
+ubuntu1604cis_samba_server: false
+ubuntu1604cis_http_proxy_server: false
+ubuntu1604cis_snmp_server: false
+ubuntu1604cis_rsync_server: false
+ubuntu1604cis_nis_server: false
+ubuntu1604cis_nis_client: false
+ubuntu1604cis_rsh_client: false
+ubuntu1604cis_talk_client: false
+ubuntu1604cis_telnet: false
+ubuntu1604cis_ldap_client_required: false
+
+# Section 03
+# Section 03 Level 1
+# A Docker host will need this set to 1 in order to route container traffic.
+# (https://docs.docker.com/engine/userguide/networking/default_network/container-communication)
+ubuntu1604cis_net_ipv4_ip_forward: 0
+
+
+# Section 03 Level 2
+# Set this flag if the kernel has TCP syncookies support.
+ubuntu1604cis_enable_tcp_syncookies: true
+
+# Section 03 Level 3
+# Disable all ipv6 interfaces. Suggested if the protocol is not used.
+ubuntu1604cis_disable_ipv6: false
+
+# Section 03 Level 4
+ubuntu1604cis_enable_hosts_allow: false
+ubuntu1604cis_enable_hosts_deny: false
+
+# Section 03 Level 6
+ubuntu1604cis_enable_iptables: true
+ubuntu1604cis_iptables_rules_file: /etc/iptables/rules.v4
+ubuntu1604cis_firewall_default_deny_policy: true
+ubuntu1604cis_loopback_traffic_policy: true
+ubuntu1604cis_outbound_established_connections_policy: true
+
+
+# Section 03 Level 7
+ubuntu1604cis_disable_wifi: true
+
+# Section 4
+# Section 04 Level 1
+ubuntu1604cis_enable_auditd: false
+# Set auditd logs file size in /var/log/auditd
+ubuntu1604cis_max_log_file_auditd: 200
+
+# Section 4 Level 2
+ubuntu1604cis_enable_syslog: false
+ubuntu1604cis_set_rsyslog_remote: false
+# 'rsyslog' or 'syslog-ng'
+ubuntu1604cis_syslog_package: rsyslog
+# Set rsyslog's logs remote server address to send logs.
+# WARNING: Update the IP address without localhost address or rsyslog will hit 100% of the CPU usage
+ubuntu1604cis_remote_logs_host_address: 192.168.112.1
+
+# Modify the kernel behavior to disallow dump of suid binaries.
+ubuntu1604cis_restrict_core_dumps: true
+
+# Section 05
+# Section 05 Level 2
+# PARMS: yes, without-password, no
+ubuntu1604cis_permit_root_login: false
+
+ubuntu1604cis_ensure_ssh_access_is_limited: false
+
+ubuntu1604cis_sshd_allow_users: sshuser
+ubuntu1604cis_sshd_allow_groups: sshusersallow
+ubuntu1604cis_sshd_deny_users: sshdenied
+ubuntu1604cis_sshd_deny_groups: sshusersdeny
+
+ubuntu1604cis_password_complexity: false
+
+# Section 5.3.2 - Ensure Failed password lockout using pam_tally2 - High risk to break PAM module and not scored
+# Enable with caution!
+ubuntu1604cis_lockout_for_failed_password_attempts_pam_tally2: false
+
+ubuntu1604cis_password_expiration_ninty_days: false
+ubuntu1604cis_password_change_seven_day_delay: false
+
+ubuntu1604cis_ensure_system_accounts_non_login: false
+
+# Section 06
+
+# Section 06 Level 1
+ubuntu1604cis_dpkg_verify: false
+
+# Section 06 Level 2
+# This variable defines if accounts without password have to be locked
+ubuntu1604cis_lock_shadow_accounts: false
+# The modification of user homes may lock users and set the system in an errored state. Set to false if one of the user is using / as home.
+# Section 6.2.8 - Set user home directories permissions are 750 or more restrictive
+ubuntu1604cis_modify_user_homes: false

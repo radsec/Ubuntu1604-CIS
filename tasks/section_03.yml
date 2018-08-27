@@ -1,0 +1,469 @@
+---
+## COPYRIGHT NOTICE - LICENSED UNDER GNU GPLV3 ##
+## START COPYRIGHT NOTICE ##
+# Ubuntu 16.04 LTS -CIS Ansible Script - Under Join Copyright
+# Copyright (C) 2018  RADSec
+# Copyright (C) 2018  Glownew Group
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## END COPYRIGHT NOTICE ##
+  - name: 3.1.1 Ensure IP forwarding is disabled (Scored)
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: '{{ubuntu1604cis_net_ipv4_ip_forward}}'
+      state: present
+      sysctl_set: yes
+    tags:
+      - section3
+      - section3.1
+      - section3.1.1
+      - low
+
+  - name: 3.1.2 Ensure packet redirect sending is disabled (Scored)
+    sysctl:
+      name: "{{ item }}"
+      value: 0
+      state: present
+      sysctl_set: yes
+      reload: yes
+    with_items:
+      - net.ipv4.conf.all.send_redirects
+      - net.ipv4.conf.default.send_redirects
+    tags:
+      - section3
+      - section3.1
+      - section3.1.2
+      - low
+
+  - name: 3.2.1 Ensure source routed packets are not accepted (Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 0
+      state: present
+      sysctl_set: yes
+      reload: yes
+    with_items:
+      - net.ipv4.conf.all.accept_source_route
+      - net.ipv4.conf.default.accept_source_route
+    tags:
+      - section3
+      - section3.2
+      - section3.2.1
+      - low
+
+  - name: 3.2.2 Ensure ICMP redirects are not accepted (Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 0
+      state: present
+      sysctl_set: yes
+      reload: yes
+    with_items:
+      - net.ipv4.conf.all.accept_redirects
+      - net.ipv4.conf.default.accept_redirects
+    tags:
+      - section3
+      - section3.2
+      - section3.2.2
+      - low
+
+  - name: 3.2.3 Ensure secure ICMP redirects are not accepted (Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 0
+      state: present
+      sysctl_set: yes
+    with_items:
+      - net.ipv4.conf.all.secure_redirects
+      - net.ipv4.conf.default.secure_redirects
+    tags:
+      - section3
+      - section3.2
+      - section3.2.3
+      - low
+
+  - name: 3.2.4 Ensure suspicious packets are logged (Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 1
+      state: present
+      sysctl_set: yes
+    with_items:
+      - net.ipv4.conf.all.log_martians
+      - net.ipv4.conf.default.log_martians
+    tags:
+      - section3
+      - section3.2
+      - section3.2.4
+      - low
+
+  - name: 3.2.5 Ensure broadcast ICMP requests are ignored (Scored)
+    sysctl:
+      name: net.ipv4.icmp_echo_ignore_broadcasts
+      value: 1
+      state: present
+      sysctl_set: yes
+    tags:
+      - section3
+      - section3.2
+      - section3.2.5
+      - low
+
+  - name: 3.2.6 Ensure bogus ICMP responses are ignored (Scored)
+    sysctl:
+      name: net.ipv4.icmp_ignore_bogus_error_responses
+      value: 1
+      state: present
+      sysctl_set: yes
+    tags:
+      - section3
+      - section3.2
+      - section3.2.6
+      - low
+
+  - name: 3.2.7 Ensure Reverse Path Filtering is enabled (Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 1
+      state: present
+      sysctl_set: yes
+      reload: yes
+    with_items:
+      - net.ipv4.conf.all.rp_filter
+      - net.ipv4.conf.default.rp_filter
+    tags:
+      - section3
+      - section3.2
+      - section3.2.7
+      - low
+
+  - name: 3.2.8 Ensure TCP SYN Cookies is enabled (Scored)
+    sysctl:
+      name: net.ipv4.tcp_syncookies
+      value: 1
+      state: present
+      sysctl_set: yes
+      reload: yes
+    when: ubuntu1604cis_enable_tcp_syncookies
+    tags:
+      - section3
+      - section3.2
+      - section3.2.8
+
+  - name: 3.3.1 Ensure IPv6 router advertisements are not accepted (Not Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 0
+      state: present
+      reload: yes
+      sysctl_set: yes
+    with_items:
+      - net.ipv6.conf.all.accept_ra
+      - net.ipv6.conf.default.accept_ra
+    tags:
+      - section3
+      - section3.3
+      - section3.3.1
+      - low
+
+  - name: 3.3.2 Ensure IPv6 redirects are not accepted (Not Scored)
+    sysctl:
+      name: "{{item}}"
+      value: 0
+      state: present
+      sysctl_set: yes
+      reload: yes
+    with_items:
+      - net.ipv6.conf.all.accept_redirects
+      - net.ipv6.conf.default.accept_redirects      
+    tags:
+      - section3
+      - section3.3
+      - section3.3.2
+      - low
+
+  - name: 3.3.3 Ensure IPv6 is disabled (Not Scored)
+    sysctl:
+      name: "{{ item }}"
+      value: 1
+      state: present
+      sysctl_set: yes
+      reload: yes 
+    with_items:
+      - net.ipv6.conf.all.disable_ipv6
+      - net.ipv6.conf.default.disable_ipv6
+      - net.ipv6.conf.lo.disable_ipv6
+    when: ubuntu1604cis_disable_ipv6
+    tags:
+      - section3
+      - section3.3
+      - section3.3.3
+      - low
+
+  - name: Flush IPv4 through sysctl
+    sysctl:
+      name: net.ipv4.route.flush
+      value: 1
+      state: present
+      sysctl_set: yes
+      reload: yes
+    tags:
+      - section3
+      - section3.1
+      - section3.2
+      - section3.3
+
+  - name: Flush IPv6 through sysctl
+    sysctl:
+      name: net.ipv6.route.flush
+      value: 1
+      state: present
+      sysctl_set: yes
+      reload: yes
+    tags:
+      - section3
+      - section3.1
+      - section3.2
+      - section3.3
+
+  - name: 3.4.1 Ensure TCP Wrappers is installed (Scored)
+    apt:
+      name: tcpd
+      state: present
+    tags:
+      - section3
+      - section3.4
+      - section3.4.1
+      - low
+
+  - name: 3.4.2 Ensure /etc/hosts.allow is configured (Scored)
+    lineinfile:
+      dest: /etc/hosts.allow
+      line: 'ALL:ALL'
+    when: ubuntu1604cis_enable_hosts_allow
+    tags:
+      - section3
+      - section3.4
+      - section3.4.2
+      - medium
+
+  - name: 3.4.3 Ensure /etc/hosts.deny is configured (Scored)
+    lineinfile:
+      dest: /etc/hosts.deny
+      line: 'ALL:ALL'
+    when: ubuntu1604cis_enable_hosts_deny
+    tags:
+      - section3
+      - section3.4
+      - section3.4.3
+      - medium
+
+  - name: 3.4.4 Ensure permissions on /etc/hosts.allow are configured (Scored)
+    file:
+      path: /etc/hosts.allow
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - section3
+      - section3.4
+      - section3.4.5
+      - low
+
+  - name: 3.4.5 Ensure permissions on /etc/hosts.deny are configured (Scored)
+    file:
+      path: /etc/hosts.deny
+      owner: root
+      group: root
+      mode: 0644
+    tags:
+      - section3
+      - section3.4
+      - section3.4.5
+      - low
+
+  - name: 3.5.1 Ensure DCCP is disabled (Not Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install dccp /bin/true'
+      state: present
+      create: True
+    tags:
+      - section3
+      - section3.5
+      - section3.5.1
+      - low
+
+  - name: 3.5.2 Ensure SCTP is disabled (Not Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install sctp /bin/true'
+      state: present
+      create: True
+    tags:
+      - section3
+      - section3.5
+      - section3.5.2
+      - low
+
+  - name: 3.5.3 Ensure RDS is disabled (Not Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install rds /bin/true'
+      state: present
+      create: True
+    tags:
+      - section3
+      - section3.5
+      - section3.5.3
+      - low
+
+  - name: 3.5.4 Ensure TIPC is disabled (Not Scored)
+    lineinfile:
+      dest: /etc/modprobe.d/CIS.conf
+      line: 'install tipc /bin/true'
+      state: present
+      create: True
+    tags:
+      - section3
+      - section3.5
+      - section3.5.4
+      - low
+
+  - name: 3.6.1 Ensure iptables is installed (Scored)
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - iptables
+      - iptables-persistent
+    when: ubuntu1604cis_enable_iptables
+    tags:
+      - section3
+      - section3.6
+      - section3.6.1
+      - low
+
+  - shell: iptables -L|egrep 'INPUT|FORWARD|OUTPUT'|grep "policy DROP"
+    register: drop_policy
+    failed_when: False
+    changed_when: False
+    tags:
+      - section3
+      - section3.6
+      - section3.6.2
+
+  - name: 3.6.2 Ensure default deny firewall policy (Scored)
+    lineinfile:
+      name: "{{ ubuntu1604cis_iptables_rules_file }}"
+      line: "{{ item }}"
+      insertbefore: '^COMMIT'
+      create: yes
+    with_items:
+      - '-P INPUT DROP'
+      - '-P FORWARD DROP'
+      - '-P OUTPUT DROP'
+    when:
+      - ubuntu1604cis_enable_iptables
+      - ubuntu1604cis_firewall_default_deny_policy
+      - drop_policy.rc == 1
+    notify: restart iptables
+    tags:
+      - section3
+      - section3.6
+      - section3.6.2
+      - medium
+
+  - name: 3.6.3 Ensure loopback traffic is configured (Scored)
+    lineinfile:
+      name: "{{ ubuntu1604cis_iptables_rules_file }}"
+      line: "{{ item }}"
+      insertbefore: '^COMMIT'
+      create: yes
+    with_items:
+      - '-A INPUT -i lo -j ACCEPT'
+      - '-A OUTPUT -o lo -j ACCEPT'
+      - '-A INPUT -s 127.0.0.0/8 -j DROP'
+    when:
+      - ubuntu1604cis_enable_iptables
+      - ubuntu1604cis_loopback_traffic_policy
+    notify: restart iptables
+    tags:
+      - section3
+      - section3.6
+      - section3.6.3
+      - low
+
+  - name: 3.6.4 Ensure outbound and established connections are configured (Not Scored)
+    lineinfile:
+      name: "{{ ubuntu1604cis_iptables_rules_file }}"
+      line: "{{ item }}"
+      insertbefore: '^COMMIT'
+      create: yes
+    with_items:
+      - '-A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT'
+      - '-A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT'
+      - '-A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT'
+      - '-A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT'
+      - '-A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT'
+      - '-A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT'
+      - '-A INPUT -p tcp --dport ssh -j ACCEPT'
+      - '-A OUTPUT -p tcp --sport 22 -j ACCEPT'
+    when:
+      - ubuntu1604cis_enable_iptables
+      - ubuntu1604cis_outbound_established_connections_policy
+    notify: restart iptables
+    tags:
+      - section3
+      - section3.6
+      - section3.6.4
+      - low
+
+  - shell: ss -ltnu|egrep 'tcp|udp'|awk '{ print $5 }'|cut -d":" -f2|sort|uniq
+    register: listening_ports
+    failed_when: False
+    changed_when: False
+    ignore_errors: true
+    tags:
+      - section3
+      - section3.6
+      - section3.6.5
+      - low
+
+  - name: 3.6.5 Ensure firewall rules exist for all open ports (Scored)
+    debug:
+      msg: "Check firewall rules for the listening ports: {{ listening_ports.stdout_lines }}"
+    ignore_errors: true
+    tags:
+      - section3
+      - section3.6
+      - section3.6.5
+      - low
+
+  - apt:
+      name: rfkill
+      state: present
+    when: ubuntu1604cis_disable_wifi
+    tags:
+      - section3
+      - section3.7
+      - low
+
+  - name: 3.7 Ensure wireless interfaces are disabled (Not Scored)
+    command: rfkill block wifi
+    when: ubuntu1604cis_disable_wifi
+    tags:
+      - section3
+      - section3.7
+      - low
